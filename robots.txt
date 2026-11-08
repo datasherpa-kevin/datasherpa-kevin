@@ -28,4 +28,4 @@ Allow: /
 User-agent: Google-Extended
 Allow: /
 
-Sitemap: https://datasherpa.co.kr/sitemap.xml
+Sitemap: https://www.datasherpa.co.kr/sitemap.xml
