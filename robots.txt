@@ -1,0 +1,31 @@
+# 데이터셰르파 홈페이지: 모든 검색엔진과 AI 검색 로봇의 수집을 허용합니다
+User-agent: *
+Allow: /
+
+# 네이버 / 다음 / 구글 / 빙
+User-agent: Yeti
+Allow: /
+User-agent: Daum
+Allow: /
+User-agent: Googlebot
+Allow: /
+User-agent: Bingbot
+Allow: /
+
+# AI 답변 서비스 (ChatGPT, Claude, Perplexity, Google AI 등)
+User-agent: GPTBot
+Allow: /
+User-agent: OAI-SearchBot
+Allow: /
+User-agent: ChatGPT-User
+Allow: /
+User-agent: ClaudeBot
+Allow: /
+User-agent: Claude-SearchBot
+Allow: /
+User-agent: PerplexityBot
+Allow: /
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://datasherpa.co.kr/sitemap.xml
