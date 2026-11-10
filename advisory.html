@@ -22,6 +22,7 @@ a{color:#C4B5FD}a:hover{color:#FFFFFF}
 .wm{background:linear-gradient(90deg,#7C3AED 0%,#C147C2 55%,#F0509E 100%);-webkit-background-clip:text;background-clip:text;color:transparent}
 </style>
 <style>html{scroll-behavior:smooth}img{max-width:100%}</style>
+<link rel="stylesheet" href="/pv.css">
 <style>
 .pg ul,.pg ol{margin:0;padding:0 0 0 22px;line-height:1.9}
 .pg li{margin:2px 0}
@@ -36,6 +37,9 @@ a{color:#C4B5FD}a:hover{color:#FFFFFF}
 </script>
 <script type="application/ld+json">
 {"@context": "https://schema.org", "@type": "BreadcrumbList", "itemListElement": [{"@type": "ListItem", "position": 1, "name": "홈", "item": "https://www.datasherpa.co.kr/"}, {"@type": "ListItem", "position": 2, "name": "프로그램", "item": "https://www.datasherpa.co.kr/#programs"}, {"@type": "ListItem", "position": 3, "name": "교육기관 · 기업 자문", "item": "https://www.datasherpa.co.kr/advisory"}]}
+</script>
+<script type="application/ld+json">
+{"@context": "https://schema.org", "@type": "VideoObject", "name": "교육기관·기업 자문 소개 영상", "description": "데이터셰르파 교육기관·기업 자문 프로그램을 15초로 소개하는 영상입니다.", "thumbnailUrl": "https://www.datasherpa.co.kr/videos/advisory.jpg", "contentUrl": "https://www.datasherpa.co.kr/videos/advisory.mp4", "uploadDate": "2026-11-11", "duration": "PT15S"}
 </script>
 <!-- Google Analytics 4 -->
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-FYFXJC6GLL"></script>
@@ -92,6 +96,10 @@ gtag('config','G-FYFXJC6GLL');
 <div style="display: flex; flex-wrap: wrap; gap: 12px; padding-top: 8px">
 <a href="#contact" style="text-decoration: none; background: linear-gradient(90deg,#7C3AED,#F0509E); color: #FFFFFF; font-weight: 700; font-size: 17px; padding: 18px 32px; border-radius: 999px; min-height: 44px; box-sizing: border-box">무료 진단 상담 받기</a>
 <a href="/#faq" style="text-decoration: none; border: 1px solid #4A3F7A; color: #F5F3FF; font-size: 17px; padding: 17px 30px; border-radius: 999px; min-height: 44px; box-sizing: border-box">자주 묻는 질문</a>
+</div>
+<div class="pv">
+<div class="pv-box"><video data-name="advisory" autoplay muted loop playsinline preload="auto" poster="/videos/advisory.jpg" aria-label="교육기관·기업 자문 소개 영상"><source src="/videos/advisory.mp4" type="video/mp4"></video></div>
+<div class="pv-row"><p class="pv-cap">교육기관·기업 자문 소개 영상 (15초)</p><button type="button" class="pv-btn" aria-label="영상 소리 켜기 또는 끄기">🔇 소리 켜기</button></div>
 </div>
 </div>
 </section>
@@ -204,5 +212,6 @@ gtag('config','G-FYFXJC6GLL');
   });
 })();
 </script>
+<script src="/pv.js" defer></script>
 </body>
 </html>

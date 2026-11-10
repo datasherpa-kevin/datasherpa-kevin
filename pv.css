@@ -1,0 +1,8 @@
+.pv{margin-top:28px;max-width:960px}
+.pv-box{position:relative;border-radius:20px;overflow:hidden;background:#0F0A24;border:1px solid #2A2150;aspect-ratio:16/9;box-shadow:0 20px 60px rgba(124,58,237,.18)}
+.pv-box video{display:block;width:100%;height:100%;object-fit:cover;background:#0F0A24}
+.pv-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-top:10px}
+.pv-btn{display:inline-flex;align-items:center;gap:8px;min-height:44px;padding:0 18px;border:1px solid rgba(255,255,255,.28);border-radius:999px;background:#171231;color:#fff;font:600 15px 'Noto Sans KR',Inter,sans-serif;cursor:pointer;flex:none}
+.pv-btn:hover{background:#241C45}
+.pv-btn:focus-visible{outline:3px solid #2DD4BF;outline-offset:2px}
+.pv-cap{margin:0 4px;font-size:13px;color:#A9A2CC}
