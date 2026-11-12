@@ -180,7 +180,7 @@ input[type=text],input[type=tel],select{width:100%;font:inherit;padding:12px;bor
 
 <script>
 /* ★ 설정: 앱스 스크립트 배포 주소와 접속 키를 넣으세요 (설정가이드 참고) */
-var SCRIPT_URL="http://www.datasherpa.co.kr/behavior-type";
+var SCRIPT_URL="https://script.google.com/macros/s/AKfycbxthxhrskjhewzN-ZZWhTA82Zk02YRQgQC_a0N46qR2wxFOGHoRjpRtwKJ6cyz3gdmpaQ/exec";
 var APP_KEY="ds2030-sherpa-8612";
 </script>
 <script>
@@ -311,7 +311,7 @@ function showResult(d){
 }
 function send(d){
   var st=$("sendst");
-  if(!SCRIPT_URL){st.textContent="https://script.google.com/macros/s/AKfycbxthxhrskjhewzN-ZZWhTA82Zk02YRQgQC_a0N46qR2wxFOGHoRjpRtwKJ6cyz3gdmpaQ/exec";return}
+  if(!SCRIPT_URL){st.textContent="(설정 전) 시트 저장 주소가 없어 저장하지 않았습니다.";return}
   st.textContent="제출 내용을 보내는 중입니다...";
   fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(window.__payload)})
    .then(function(){st.textContent="제출이 완료되었습니다. 결과지는 담당 컨설턴트에게도 전달됩니다."})
