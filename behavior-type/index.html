@@ -3,6 +3,7 @@
 <meta name="robots" content="noindex,nofollow">
 <title>영업 스타일 진단</title>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
 <style>
 /* Layout: 한 화면 한 문항 진행 → 마지막 정보 입력·제출 → 같은 화면 결과지. 데이터셰르파 보라/핑크/청록 */
@@ -68,6 +69,11 @@ input[type=text],input[type=tel],select{width:100%;font:inherit;padding:12px;bor
 .tag{display:inline-block;font-size:12px;font-weight:700;color:var(--purple);background:var(--lead);padding:2px 10px;border-radius:99px;margin-bottom:8px}
 .note{font-size:13px;color:var(--muted);border-left:4px solid var(--amber);padding:6px 12px;margin-top:16px}
 .who{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-bottom:6px}
+.capfoot{margin-top:14px;text-align:center;font-size:12px;color:var(--muted)}
+#imgpanel{margin-top:14px}
+#imgpanel img{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;display:block;margin:10px 0}
+.btn[disabled]{opacity:.45;cursor:default}
+a.btn{display:inline-block;text-decoration:none;text-align:center;line-height:22px}
 [hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){.progress b{transition:none}}
 </style>
@@ -149,7 +155,7 @@ input[type=text],input[type=tel],select{width:100%;font:inherit;padding:12px;bor
 
   <!-- 결과지 -->
   <section id="s-res" hidden>
-    <div class="card">
+    <div class="card" id="r-card">
       <span class="tag">영업 스타일 결과지</span>
       <h1 id="r-title"></h1>
       <div class="who" id="r-who"></div>
@@ -168,12 +174,17 @@ input[type=text],input[type=tel],select{width:100%;font:inherit;padding:12px;bor
       <p id="r-act"></p>
 
       <p class="note">점수는 정답이 아니라 지금 나의 습관을 보여 주는 지도입니다. 상황에 따라 다른 스타일이 나오는 것도 자연스럽습니다. 자세한 코칭은 담당 컨설턴트와 이어서 진행합니다.</p>
-      <div class="row">
-        <button class="btn ghost" id="copy">결과 요약 복사</button>
+      <div class="capfoot">DATASHERPA · www.datasherpa.co.kr</div>
+      <div class="row" data-html2canvas-ignore="true">
+        <button class="btn" id="btnimg" disabled>이미지로 저장</button>
         <button class="btn ghost" id="again">처음부터 다시</button>
       </div>
-      <p id="sendst" style="font-size:13px;color:var(--muted);margin-top:8px" role="status"></p>
-      <p id="copied" style="font-size:13px;color:var(--teal);margin-top:8px" hidden>복사했습니다.</p>
+      <p id="sendst" data-html2canvas-ignore="true" style="font-size:13px;color:var(--muted);margin-top:8px" role="status"></p>
+    </div>
+    <div id="imgpanel" hidden>
+      <p style="font-size:14px">이미지를 <b>길게 눌러</b> '사진에 저장' 또는 '이미지 저장'을 고르세요. 컴퓨터에서는 아래 버튼을 누르면 내려받습니다.</p>
+      <img id="imgview" alt="영업 스타일 결과지 이미지">
+      <a class="btn" id="imgdl" download="영업스타일_결과지.png">이미지 내려받기</a>
     </div>
   </section>
 </div>
@@ -271,7 +282,7 @@ $("form").addEventListener("submit",function(e){
   al.classList.remove("show");
   var data=Object.assign({},f,{at:new Date().toISOString()});
   showResult(data);
-  send(data);
+  makeImage().then(function(){send(data)});
 });
 
 function score(){
@@ -304,24 +315,53 @@ function showResult(d){
   $("r-m2t").textContent="보조 스타일 · "+sub;
   $("r-m2").innerHTML=TXT[b].pts.map(function(p){return"<li>"+p+"</li>"}).join("");
   $("r-act").textContent=TXT[a].act;
-  window.__payload={key:APP_KEY,info:d,answers:ans.map(function(a,n){return a+1}),scores:s,main:main,sub:sub,type:k.t,
+  window.__payload={key:APP_KEY,image:"",info:d,answers:ans.map(function(a,n){return a+1}),scores:s,main:main,sub:sub,type:k.t,
     result:{title:$("r-title").textContent,lead:$("r-lead").textContent,mainTitle:"주 스타일 · "+main,mainPts:TXT[a].pts.concat(["조심할 점: "+TXT[a].tip]),subTitle:"보조 스타일 · "+sub,subPts:TXT[b].pts,act:TXT[a].act}};
+  window.__name=d.nick;
   window.__sum=d.nick+"님 ("+d.salon+" / "+d.rank+")\n영업 스타일: "+main+" + "+sub+" ("+k.t+")\n점수: "+["A","B","C","D"].map(function(x){return ST[x].n+" "+s[x]}).join(" / ")+"\n이번 달 한 가지: "+TXT[a].act;
   show("s-res");
 }
+function makeImage(){
+  var st=$("sendst"); st.textContent="결과지 이미지를 만드는 중입니다...";
+  window.__imgData="";window.__imgBlob=null;
+  var root=document.documentElement, prev=root.getAttribute("data-theme");
+  root.setAttribute("data-theme","light");
+  var fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
+  return fonts.then(function(){
+    return html2canvas($("r-card"),{scale:2,backgroundColor:"#FFFFFF",useCORS:true,logging:false});
+  }).then(function(c){
+    window.__imgData=c.toDataURL("image/png");
+    return new Promise(function(res){c.toBlob(function(b){window.__imgBlob=b;res()},"image/png")});
+  }).catch(function(){window.__imgData="";window.__imgBlob=null}).then(function(){
+    if(prev===null)root.removeAttribute("data-theme");else root.setAttribute("data-theme",prev);
+    $("btnimg").disabled=!window.__imgData;
+    st.textContent="";
+  });
+}
+$("btnimg").onclick=function(){
+  if(!window.__imgBlob)return;
+  var fname="영업스타일_결과지_"+(window.__name||"")+".png";
+  var file=null;
+  try{file=new File([window.__imgBlob],fname,{type:"image/png"})}catch(e){}
+  if(file&&navigator.canShare&&navigator.canShare({files:[file]})){
+    navigator.share({files:[file],title:"영업 스타일 결과지"}).catch(function(){});
+    return;
+  }
+  $("imgview").src=window.__imgData;
+  var a=$("imgdl");a.href=URL.createObjectURL(window.__imgBlob);a.download=fname;
+  $("imgpanel").hidden=false;
+  $("imgpanel").scrollIntoView({behavior:"smooth",block:"start"});
+};
 function send(d){
   var st=$("sendst");
   if(!SCRIPT_URL){st.textContent="(설정 전) 시트 저장 주소가 없어 저장하지 않았습니다.";return}
+  window.__payload.image=window.__imgData||"";
   st.textContent="제출 내용을 보내는 중입니다...";
   fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(window.__payload)})
    .then(function(){st.textContent="제출이 완료되었습니다. 결과지는 담당 컨설턴트에게도 전달됩니다."})
    .catch(function(){st.textContent="전송에 실패했습니다. 인터넷 연결을 확인하고 담당 컨설턴트에게 알려 주세요."});
 }
-$("copy").onclick=function(){
-  var ok=function(){$("copied").hidden=false};
-  try{navigator.clipboard.writeText(window.__sum).then(ok,function(){})}catch(e){}
-};
-$("again").onclick=function(){ans=[];i=0;$("form").reset();document.querySelectorAll(".bad").forEach(function(n){n.classList.remove("bad")});$("copied").hidden=true;show("s-start")};
+$("again").onclick=function(){ans=[];i=0;$("form").reset();document.querySelectorAll(".bad").forEach(function(n){n.classList.remove("bad")});$("imgpanel").hidden=true;show("s-start")};
 </script>
 
 </body></html>
