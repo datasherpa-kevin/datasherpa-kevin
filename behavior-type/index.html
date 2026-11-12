@@ -1,0 +1,327 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>영업 스타일 진단</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap">
+<style>
+/* Layout: 한 화면 한 문항 진행 → 마지막 정보 입력·제출 → 같은 화면 결과지. 데이터셰르파 보라/핑크/청록 */
+:root{
+  --bg:#FAF8FE; --card:#FFFFFF; --fg:#241B3A; --muted:#6B6382; --line:#E4DDF2;
+  --purple:#7F3FE2; --pink:#E8318C; --teal:#0E9C84; --amber:#C98A0B;
+  --lead:#F3EEFD; --danger:#C62A4F; --on-purple:#FFFFFF;
+  --font:"Noto Sans KR","Malgun Gothic","Apple SD Gothic Neo",sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#17122A; --card:#221A3D; --fg:#F1ECFB; --muted:#A99FC4; --line:#3A2F5E;
+  --purple:#A478F0; --pink:#FF6FB0; --teal:#2FCDB0; --amber:#E7B23E;
+  --lead:#2B2150; --danger:#FF7D9B; --on-purple:#17122A; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#17122A; --card:#221A3D; --fg:#F1ECFB; --muted:#A99FC4; --line:#3A2F5E;
+  --purple:#A478F0; --pink:#FF6FB0; --teal:#2FCDB0; --amber:#E7B23E;
+  --lead:#2B2150; --danger:#FF7D9B; --on-purple:#17122A; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--font);line-height:1.6;
+  padding-block:20px 56px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.wrap{max-width:640px;margin:0 auto}
+.brand{display:flex;align-items:center;gap:10px;font-weight:900;letter-spacing:-.02em;margin-bottom:18px}
+.brand i{width:30px;height:30px;border-radius:9px;background:linear-gradient(135deg,var(--purple),var(--pink));display:grid;place-items:center;color:#fff;font-style:normal;font-size:13px}
+.brand small{font-weight:500;color:var(--muted);margin-left:auto;font-size:12px}
+h1{font-size:26px;line-height:1.3;margin:0 0 10px;text-wrap:balance;letter-spacing:-.02em}
+h2{font-size:19px;margin:0 0 12px;text-wrap:balance}
+p{margin:0 0 10px}
+.lead{background:var(--lead);border-left:4px solid var(--purple);padding:14px 16px;border-radius:0 10px 10px 0;margin:16px 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px}
+.btn{font:inherit;font-weight:700;border:0;border-radius:10px;padding:13px 20px;cursor:pointer;background:linear-gradient(90deg,var(--purple),var(--pink));color:#fff;min-height:48px}
+.btn.ghost{background:transparent;color:var(--fg);border:1px solid var(--line)}
+.btn:focus-visible,.opt:focus-within,input:focus-visible,select:focus-visible{outline:3px solid var(--teal);outline-offset:2px}
+.progress{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:0 0 6px}
+.progress b{display:block;height:100%;background:linear-gradient(90deg,var(--purple),var(--pink));transition:width .25s}
+.pnum{font-size:13px;color:var(--muted);margin-bottom:14px;display:flex;justify-content:space-between}
+.opt{display:flex;gap:12px;align-items:flex-start;border:1.5px solid var(--line);border-radius:12px;padding:14px;margin-bottom:10px;cursor:pointer;background:var(--card)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .n{flex:none;width:28px;height:28px;border-radius:50%;border:1.5px solid var(--purple);color:var(--purple);display:grid;place-items:center;font-weight:700;font-size:14px}
+.opt.sel{border-color:var(--purple);background:var(--lead)}
+.opt.sel .n{background:var(--purple);color:var(--on-purple)}
+.row{display:flex;gap:10px;justify-content:space-between;margin-top:14px}
+label.f{display:block;font-weight:700;font-size:14px;margin:16px 0 4px}
+label.f small{font-weight:400;color:var(--muted)}
+input[type=text],input[type=tel],select{width:100%;font:inherit;padding:12px;border-radius:10px;border:1.5px solid var(--line);background:var(--bg);color:var(--fg);min-height:48px}
+.err{color:var(--danger);font-size:13px;margin-top:4px;display:none;font-weight:500}
+.bad input,.bad select{border-color:var(--danger)}
+.bad .err{display:block}
+.alert{display:none;background:var(--card);border:1.5px solid var(--danger);color:var(--danger);border-radius:10px;padding:12px 14px;margin:14px 0;font-weight:500}
+.alert.show{display:block}
+.check{display:flex;gap:10px;align-items:flex-start;margin-top:18px;font-size:14px}
+.check input{width:20px;height:20px;margin-top:3px;accent-color:var(--purple)}
+.bars{display:grid;gap:12px;margin:14px 0}
+.bar{display:grid;grid-template-columns:76px 1fr 34px;gap:10px;align-items:center;font-size:14px}
+.bar .t{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.bar .t b{display:block;height:100%;border-radius:7px}
+.bar span:last-child{text-align:right;font-variant-numeric:tabular-nums;font-weight:700}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media(max-width:480px){.grid2{grid-template-columns:1fr}.brand small{display:none}}
+.mini{border:1px solid var(--line);border-top:4px solid var(--purple);border-radius:10px;padding:14px;background:var(--card)}
+.mini.s2{border-top-color:var(--pink)}
+.mini h3{margin:0 0 6px;font-size:15px}
+.mini ul{margin:0;padding-left:18px;font-size:14px}
+.tag{display:inline-block;font-size:12px;font-weight:700;color:var(--purple);background:var(--lead);padding:2px 10px;border-radius:99px;margin-bottom:8px}
+.note{font-size:13px;color:var(--muted);border-left:4px solid var(--amber);padding:6px 12px;margin-top:16px}
+.who{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;color:var(--muted);margin-bottom:6px}
+[hidden]{display:none!important}
+@media(prefers-reduced-motion:reduce){.progress b{transition:none}}
+</style>
+</head><body>
+
+<div class="wrap">
+  <div class="brand"><i>ds.</i> 데이터셰르파 <small>영업 스타일 진단</small></div>
+
+  <!-- 시작 -->
+  <section id="s-start" class="card">
+    <h1>나의 영업 스타일은 어떤 모습일까요?</h1>
+    <p>평소 일하는 모습과 가장 가까운 보기를 하나씩 고르면 됩니다. 20문항, 약 10분 걸립니다. 정답은 없습니다.</p>
+    <div class="lead">잘 보이려는 답보다 <b>평소 실제 모습</b>에 가까운 답을 골라 주세요. 마지막에 이름과 연락처를 입력하면 결과지가 바로 나옵니다.</div>
+    <button class="btn" id="go">진단 시작하기</button>
+  </section>
+
+  <!-- 문항 -->
+  <section id="s-q" hidden>
+    <div class="progress"><b id="pbar" style="width:0"></b></div>
+    <div class="pnum"><span id="pnum"></span><span id="pdone"></span></div>
+    <div class="card">
+      <h2 id="qtext"></h2>
+      <div id="opts"></div>
+      <div class="row">
+        <button class="btn ghost" id="prev">이전</button>
+        <button class="btn" id="next">다음</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 정보 입력 + 제출 -->
+  <section id="s-info" hidden>
+    <div class="progress"><b style="width:100%"></b></div>
+    <div class="pnum"><span>마지막 단계</span><span>20 / 20 문항 완료</span></div>
+    <form class="card" id="form" novalidate>
+      <h2>결과지를 받을 정보를 입력해 주세요</h2>
+      <p style="font-size:14px;color:var(--muted)">입력하신 정보는 행동유형 데이터를 구분하기 위해서만 사용합니다.</p>
+      <div class="alert" id="alert" role="alert"></div>
+
+      <div class="field" data-k="salon">
+        <label class="f" for="salon">살롱명 <small>(네이버플레이스에 등록된 이름)</small></label>
+        <input type="text" id="salon" autocomplete="off" placeholder="예: 헤어살롱 ○○">
+        <div class="err">[입력되지 않은 항목]행동유형 데이터의 구분을 위해서 꼭 입력해 주세요</div>
+      </div>
+      <div class="field" data-k="rank">
+        <label class="f" for="rank">직급</label>
+        <select id="rank">
+          <option value="">선택해 주세요</option>
+          <option>원장</option><option>부원장</option><option>실장</option>
+          <option>디자이너</option><option>스타일리스트</option><option>파트너</option><option>인턴</option>
+        </select>
+        <div class="err">[입력되지 않은 항목]행동유형 데이터의 구분을 위해서 꼭 입력해 주세요</div>
+      </div>
+      <div class="field" data-k="nick">
+        <label class="f" for="nick">스타일리스트/파트너 이름 <small>(네이버플레이스에 등록된 이름)</small></label>
+        <input type="text" id="nick" autocomplete="off">
+        <div class="err">[입력되지 않은 항목]행동유형 데이터의 구분을 위해서 꼭 입력해 주세요</div>
+      </div>
+      <div class="field" data-k="real">
+        <label class="f" for="real">본명</label>
+        <input type="text" id="real" autocomplete="name">
+        <div class="err">[입력되지 않은 항목]행동유형 데이터의 구분을 위해서 꼭 입력해 주세요</div>
+      </div>
+      <div class="field" data-k="tel">
+        <label class="f" for="tel">연락처</label>
+        <input type="tel" id="tel" inputmode="tel" autocomplete="tel" placeholder="010-0000-0000">
+        <div class="err">[입력되지 않은 항목]행동유형 데이터의 구분을 위해서 꼭 입력해 주세요</div>
+      </div>
+
+      <div class="field" data-k="agree">
+        <label class="check"><input type="checkbox" id="agree">
+          <span>개인정보 수집·이용에 동의합니다. (항목: 살롱명, 직급, 이름, 본명, 연락처 / 목적: 영업 스타일 진단과 결과 안내 / 보관: 컨설팅 종료 후 1년)</span></label>
+        <div class="err">개인정보 수집·이용에 동의해 주세요</div>
+      </div>
+
+      <div class="row"><button type="button" class="btn ghost" id="back">이전 문항</button><button type="submit" class="btn">제출하고 결과 보기</button></div>
+    </form>
+  </section>
+
+  <!-- 결과지 -->
+  <section id="s-res" hidden>
+    <div class="card">
+      <span class="tag">영업 스타일 결과지</span>
+      <h1 id="r-title"></h1>
+      <div class="who" id="r-who"></div>
+
+      <div class="lead" id="r-lead"></div>
+
+      <h2>스타일별 점수 <span style="font-weight:400;font-size:13px;color:var(--muted)">(20점 만점 합계)</span></h2>
+      <div class="bars" id="r-bars"></div>
+
+      <div class="grid2">
+        <div class="mini"><h3 id="r-m1t"></h3><ul id="r-m1"></ul></div>
+        <div class="mini s2"><h3 id="r-m2t"></h3><ul id="r-m2"></ul></div>
+      </div>
+
+      <h2>이번 달 바로 해 볼 영업 한 가지</h2>
+      <p id="r-act"></p>
+
+      <p class="note">점수는 정답이 아니라 지금 나의 습관을 보여 주는 지도입니다. 상황에 따라 다른 스타일이 나오는 것도 자연스럽습니다. 자세한 코칭은 담당 컨설턴트와 이어서 진행합니다.</p>
+      <div class="row">
+        <button class="btn ghost" id="copy">결과 요약 복사</button>
+        <button class="btn ghost" id="again">처음부터 다시</button>
+      </div>
+      <p id="sendst" style="font-size:13px;color:var(--muted);margin-top:8px" role="status"></p>
+      <p id="copied" style="font-size:13px;color:var(--teal);margin-top:8px" hidden>복사했습니다.</p>
+    </div>
+  </section>
+</div>
+
+<script>
+/* ★ 설정: 앱스 스크립트 배포 주소와 접속 키를 넣으세요 (설정가이드 참고) */
+var SCRIPT_URL="http://www.datasherpa.co.kr/behavior-type";
+var APP_KEY="ds2030-sherpa-8612";
+</script>
+<script>
+/* 코드: A=앞장형 B=분위기형 C=단골형 D=꼼꼼형. 보기는 문항마다 다른 순서로 번호 1~4가 붙음 */
+var ST={A:{n:"앞장형",c:"var(--purple)"},B:{n:"분위기형",c:"var(--pink)"},C:{n:"단골형",c:"var(--teal)"},D:{n:"꼼꼼형",c:"var(--amber)"}};
+var Q=[
+["새 손님이 처음 오셨을 때 나는?","C천천히 고민을 들어준다.|A바로 원하는 스타일을 확인하고 시술을 제안한다.|D모발과 두피 상태부터 꼼꼼히 살핀다.|B먼저 편하게 말을 걸어 분위기를 푼다."],
+["추가 시술을 권할 때 나는?","B대화하다가 자연스럽게 꺼낸다.|D이유와 근거를 설명하며 말한다.|A자신 있게 먼저 말한다.|C손님이 편해하는지 살피며 조심스럽게 말한다."],
+["이번 달 매출 목표가 정해지면 나는?","D계획부터 세운다.|B동료와 함께 힘을 내고 싶다.|C부담이 되어 천천히 접근한다.|A의욕이 확 오른다."],
+["손님이 가격이 비싸다고 말할 때 나는?","A시술의 가치를 설득한다.|C손님의 마음을 먼저 헤아린다.|B웃으며 분위기를 풀어 준다.|D가격이 나온 이유를 차근차근 설명한다."],
+["한가한 시간에 나는?","B동료나 지인과 대화하거나 SNS를 한다.|C단골 손님에게 안부 연락을 한다.|A새 손님을 늘릴 방법을 찾아본다.|D기록을 정리하거나 기술을 연습한다."],
+["손님이 시술 결과에 아쉬움을 말할 때 나는?","D원인을 분석해서 설명한다.|A바로 해결 방법을 제시한다.|C끝까지 들어주고 마음을 달랜다.|B미안함을 표현하고 분위기를 부드럽게 한다."],
+["단골 손님을 관리하는 나의 방식은?","A더 높은 시술로 이끈다.|D시술 이력을 기록해 두고 활용한다.|B만날 때마다 즐거운 대화를 한다.|C지난 이야기를 기억해서 챙긴다."],
+["영업이 잘 안 되는 날 나는?","C혼자 조용히 생각하며 마음을 추스른다.|B동료와 이야기하며 기분을 푼다.|D무엇이 문제였는지 되짚어 본다.|A방법을 바꿔서 다시 도전한다."],
+["새로운 시술이나 제품이 나왔을 때 나는?","D성분과 효과를 먼저 자세히 확인한다.|C충분히 익숙해진 뒤에 조심스럽게 권한다.|A먼저 도입해서 손님에게 권해 본다.|B주변에 소문내고 이벤트를 떠올린다."],
+["손님과 대화할 때 나는?","A핵심만 짧고 분명하게 말한다.|B재미있는 이야기로 대화를 이끈다.|D정확한 정보를 중심으로 말한다.|C주로 듣는 편이다."],
+["매장에서 새로운 변화를 시도할 때 나는?","C갑작스러운 변화는 부담스럽다.|D장단점부터 따져 본다.|B재미있겠다며 분위기를 띄운다.|A바로 해 보자고 앞장선다."],
+["손님이 고민을 길게 이야기할 때 나는?","B공감하며 맞장구를 친다.|A요점을 정리해서 해결책을 말한다.|C끝까지 귀 기울여 듣는다.|D질문하면서 정확한 상황을 파악한다."],
+["다른 디자이너와 비교될 때 나는?","A더 잘하고 싶어서 불이 붙는다.|C마음이 불편하지만 내색하지 않는다.|D차이가 무엇인지 분석한다.|B서로 응원하며 같이 올라가고 싶다."],
+["손님에게 SNS나 후기를 부탁할 때 나는?","D필요한 이유를 설명하고 요청한다.|B자연스럽게 농담처럼 부탁한다.|A분명하게 요청한다.|C부담이 될까 봐 말을 아낀다."],
+["상담 기록을 남기는 나의 습관은?","C손님의 취향과 이야기를 위주로 적는다.|A핵심만 간단히 적는다.|B자주 잊어버린다.|D시술 내용을 상세하게 빠짐없이 적는다."],
+["손님이 예약 없이 갑자기 방문했을 때 나는?","B반갑게 맞이하며 대화를 시작한다.|D스케줄을 확인하고 가능한 범위를 안내한다.|C기다리게 해서 미안해하며 정성껏 맞이한다.|A일정을 조정해서라도 받는다."],
+["교육을 받을 때 나에게 가장 잘 맞는 방식은?","C천천히 반복해서 익히는 방식.|B여럿이 함께 이야기하며 배우는 방식.|A바로 실전에 적용해 보는 방식.|D자료와 근거를 보며 이해하는 방식."],
+["동료가 도움을 요청할 때 나는?","A빠르게 해결책을 알려준다.|D정확한 방법을 차근차근 알려준다.|C시간을 내어 끝까지 도와준다.|B밝게 응원하며 같이 고민한다."],
+["내가 생각하는 나의 가장 큰 강점은?","D정확성과 꼼꼼함.|A결단력과 추진력.|B친화력과 밝은 에너지.|C배려심과 꾸준함."],
+["일을 할 때 나를 가장 힘들게 하는 것은?","B혼자 조용히 일해야 하는 상황.|C갑작스러운 변화와 갈등.|D대충 넘어가는 분위기.|A답답하게 느려지는 상황."]
+].map(function(q){return{t:q[0],o:q[1].split("|").map(function(s){return{k:s[0],x:s.slice(1)}})}});
+
+var TXT={
+A:{lead:"결정이 빠르고 목표를 향해 앞장서는 힘이 있습니다.",pts:["처음 보는 손님에게도 제안이 분명합니다","목표가 생기면 속도가 붙습니다","시술의 가치를 말로 잘 전합니다"],tip:"서두르다 손님의 속도를 놓치지 않도록, 제안 전에 손님 이야기를 한 문장 먼저 되받아 보세요.",act:"추가 시술을 권하기 전에 손님의 고민을 한 문장으로 되받아 말한 뒤 제안해 보세요."},
+B:{lead:"분위기를 편하게 만들고 사람을 끌어당기는 힘이 있습니다.",pts:["처음 온 손님과도 금방 가까워집니다","대화가 즐거워 재방문 이유가 됩니다","소문과 이벤트를 만드는 감각이 있습니다"],tip:"대화는 좋은데 제안이 흐지부지되지 않게, 시술 안내를 한 가지 문장으로 정해 두세요.",act:"상담이 끝날 때 다음 시술 제안 한 문장을 정해 두고 매번 같은 자리에서 말해 보세요."},
+C:{lead:"손님 마음을 헤아리고 오래 관계를 지키는 힘이 있습니다.",pts:["단골의 지난 이야기를 잘 기억합니다","손님이 안심하고 맡깁니다","갈등 없이 꾸준히 신뢰를 쌓습니다"],tip:"배려하다 제안을 미루지 않도록, 가격과 추가 시술은 손님이 편할 때 짧게 먼저 꺼내 보세요.",act:"이번 달 단골 5명에게 안부와 함께 맞춤 케어 한 가지를 먼저 제안해 보세요."},
+D:{lead:"기록과 근거로 정확하게 설명하는 힘이 있습니다.",pts:["시술 이력과 상태를 꼼꼼히 챙깁니다","가격과 효과를 이유와 함께 설명합니다","실수와 누락이 적습니다"],tip:"설명이 길어져 손님이 부담되지 않게, 핵심 세 줄만 먼저 말하고 나머지는 물어보면 답하세요.",act:"상담 기록 중 핵심 세 줄을 정해, 손님에게 말로 먼저 전하는 연습을 해 보세요."}
+};
+
+var i=0,ans=[],cur="s-start";
+function $(id){return document.getElementById(id)}
+function show(id){["s-start","s-q","s-info","s-res"].forEach(function(s){$(s).hidden=(s!==id)});cur=id;window.scrollTo(0,0)}
+function done(){return ans.filter(function(a){return a!=null}).length}
+
+function render(){
+  var q=Q[i];
+  $("qtext").textContent=(i+1)+". "+q.t;
+  $("pnum").textContent=(i+1)+" / 20";
+  $("pdone").textContent=done()+"문항 응답";
+  $("pbar").style.width=(done()/20*100)+"%";
+  var h="";
+  q.o.forEach(function(o,n){
+    var sel=ans[i]===n;
+    h+='<label class="opt'+(sel?' sel':'')+'"><input type="radio" name="q" value="'+n+'"'+(sel?' checked':'')+'><span class="n">'+(n+1)+'</span><span>'+o.x+'</span></label>';
+  });
+  $("opts").innerHTML=h;
+  $("prev").style.visibility=i===0?"hidden":"visible";
+  $("next").textContent=i===19?"마지막 단계로":"다음";
+  $("next").disabled=ans[i]==null;$("next").style.opacity=ans[i]==null?.45:1;
+}
+$("opts").addEventListener("change",function(e){
+  ans[i]=+e.target.value;render();
+  setTimeout(function(){if(i<19){i++;render()}},220);
+});
+$("go").onclick=function(){show("s-q");render()};
+$("prev").onclick=function(){if(i>0){i--;render()}};
+$("next").onclick=function(){
+  if(ans[i]==null)return;
+  if(i<19){i++;render()}else{var m=firstMissing();if(m>=0){i=m;render()}else show("s-info")}
+};
+function firstMissing(){for(var n=0;n<20;n++)if(ans[n]==null)return n;return -1}
+$("back").onclick=function(){i=19;show("s-q");render()};
+
+/* 제출 */
+$("form").addEventListener("submit",function(e){
+  e.preventDefault();
+  var f={salon:$("salon").value.trim(),rank:$("rank").value,nick:$("nick").value.trim(),real:$("real").value.trim(),tel:$("tel").value.trim()};
+  var labels={salon:"살롱명",rank:"직급",nick:"스타일리스트/파트너 이름",real:"본명",tel:"연락처"};
+  var miss=[];
+  Object.keys(f).forEach(function(k){
+    var el=document.querySelector('.field[data-k="'+k+'"]');
+    var bad=!f[k];el.classList.toggle("bad",bad);if(bad)miss.push(labels[k]);
+  });
+  var ag=$("agree").checked;
+  document.querySelector('.field[data-k="agree"]').classList.toggle("bad",!ag);
+  var al=$("alert");
+  if(miss.length){
+    al.textContent="[입력되지 않은 항목]행동유형 데이터의 구분을 위해서 꼭 입력해 주세요 ("+miss.join(", ")+")";
+    al.classList.add("show");al.scrollIntoView({block:"center"});return;
+  }
+  if(!ag){al.textContent="개인정보 수집·이용에 동의해 주세요.";al.classList.add("show");return}
+  al.classList.remove("show");
+  var data=Object.assign({},f,{at:new Date().toISOString()});
+  showResult(data);
+  send(data);
+});
+
+function score(){
+  var s={A:0,B:0,C:0,D:0};
+  ans.forEach(function(a,n){s[Q[n].o[a].k]++});return s;
+}
+function kind(s){
+  var arr=Object.keys(s).map(function(k){return[k,s[k]]}).sort(function(a,b){return b[1]-a[1]});
+  var all37=arr.every(function(x){return x[1]>=3&&x[1]<=7});
+  var t;
+  if(all37)t="균형형";
+  else if(arr[0][1]-arr[2][1]<=2)t="삼각형";
+  else if(arr[0][1]-arr[1][1]<=2)t="복합형";
+  else t="뚜렷한 단일형";
+  return{arr:arr,t:t};
+}
+function showResult(d){
+  var s=score(),k=kind(s),a=k.arr[0][0],b=k.arr[1][0];
+  var main=ST[a].n,sub=ST[b].n;
+  $("r-title").textContent=d.nick+"님은 "+main+(k.t==="뚜렷한 단일형"?" 중심":" + "+sub)+" ("+k.t+")";
+  $("r-who").innerHTML="<span>"+d.salon+"</span><span>"+d.rank+"</span><span>"+d.real+"</span>";
+  $("r-lead").textContent=TXT[a].lead+" 보조로는 "+sub+"의 모습이 함께 보입니다.";
+  var bh="";
+  ["A","B","C","D"].forEach(function(x){
+    bh+='<div class="bar"><span>'+ST[x].n+'</span><span class="t"><b style="width:'+(s[x]/20*100)+'%;background:'+ST[x].c+'"></b></span><span>'+s[x]+'</span></div>';
+  });
+  $("r-bars").innerHTML=bh;
+  $("r-m1t").textContent="주 스타일 · "+main;
+  $("r-m1").innerHTML=TXT[a].pts.map(function(p){return"<li>"+p+"</li>"}).join("")+"<li><b>조심할 점</b> "+TXT[a].tip+"</li>";
+  $("r-m2t").textContent="보조 스타일 · "+sub;
+  $("r-m2").innerHTML=TXT[b].pts.map(function(p){return"<li>"+p+"</li>"}).join("");
+  $("r-act").textContent=TXT[a].act;
+  window.__payload={key:APP_KEY,info:d,answers:ans.map(function(a,n){return a+1}),scores:s,main:main,sub:sub,type:k.t,
+    result:{title:$("r-title").textContent,lead:$("r-lead").textContent,mainTitle:"주 스타일 · "+main,mainPts:TXT[a].pts.concat(["조심할 점: "+TXT[a].tip]),subTitle:"보조 스타일 · "+sub,subPts:TXT[b].pts,act:TXT[a].act}};
+  window.__sum=d.nick+"님 ("+d.salon+" / "+d.rank+")\n영업 스타일: "+main+" + "+sub+" ("+k.t+")\n점수: "+["A","B","C","D"].map(function(x){return ST[x].n+" "+s[x]}).join(" / ")+"\n이번 달 한 가지: "+TXT[a].act;
+  show("s-res");
+}
+function send(d){
+  var st=$("sendst");
+  if(!SCRIPT_URL){st.textContent="(설정 전) 시트 저장 주소가 없어 저장하지 않았습니다.";return}
+  st.textContent="제출 내용을 보내는 중입니다...";
+  fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(window.__payload)})
+   .then(function(){st.textContent="제출이 완료되었습니다. 결과지는 담당 컨설턴트에게도 전달됩니다."})
+   .catch(function(){st.textContent="전송에 실패했습니다. 인터넷 연결을 확인하고 담당 컨설턴트에게 알려 주세요."});
+}
+$("copy").onclick=function(){
+  var ok=function(){$("copied").hidden=false};
+  try{navigator.clipboard.writeText(window.__sum).then(ok,function(){})}catch(e){}
+};
+$("again").onclick=function(){ans=[];i=0;$("form").reset();document.querySelectorAll(".bad").forEach(function(n){n.classList.remove("bad")});$("copied").hidden=true;show("s-start")};
+</script>
+
+</body></html>
