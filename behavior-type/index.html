@@ -73,6 +73,9 @@ input[type=text],input[type=tel],select{width:100%;font:inherit;padding:12px;bor
 #imgpanel{margin-top:14px}
 #imgpanel img{width:100%;height:auto;border:1px solid var(--line);border-radius:10px;display:block;margin:10px 0}
 .btn[disabled]{opacity:.45;cursor:default}
+.btn{white-space:nowrap}
+.row.pair .btn{flex:1}
+@media(max-width:480px){.row.stack{flex-direction:column-reverse}.row.stack .btn{width:100%}.row .btn{padding-left:14px;padding-right:14px}}
 a.btn{display:inline-block;text-decoration:none;text-align:center;line-height:22px}
 [hidden]{display:none!important}
 @media(prefers-reduced-motion:reduce){.progress b{transition:none}}
@@ -145,13 +148,13 @@ a.btn{display:inline-block;text-decoration:none;text-align:center;line-height:22
         <div class="err">개인정보 수집·이용에 동의해 주세요</div>
       </div>
 
-      <div class="row"><button type="button" class="btn ghost" id="back">이전 문항</button><button type="submit" class="btn">제출하고 결과 보기</button></div>
+      <div class="row stack"><button type="button" class="btn ghost" id="back">이전 문항</button><button type="submit" class="btn">제출하고 결과 보기</button></div>
     </form>
   </section>
 
   <!-- 결과지 -->
   <section id="s-res" hidden>
-    <div class="card" id="r-card">
+    <div id="r-cap"><div class="card" id="r-card">
       <span class="tag">영업 스타일 결과지</span>
       <h1 id="r-title"></h1>
       <div class="who" id="r-who"></div>
@@ -171,12 +174,12 @@ a.btn{display:inline-block;text-decoration:none;text-align:center;line-height:22
 
       <p class="note">점수는 정답이 아니라 지금 나의 습관을 보여 주는 지도입니다. 상황에 따라 다른 스타일이 나오는 것도 자연스럽습니다. 자세한 코칭은 담당 컨설턴트와 이어서 진행합니다.</p>
       <div class="capfoot">DATASHERPA · www.datasherpa.co.kr</div>
-      <div class="row" data-html2canvas-ignore="true">
+      <div class="row pair" data-html2canvas-ignore="true">
         <button class="btn" id="btnimg" disabled>이미지로 저장</button>
         <button class="btn ghost" id="again">처음부터 다시</button>
       </div>
       <p id="sendst" data-html2canvas-ignore="true" style="font-size:13px;color:var(--muted);margin-top:8px" role="status"></p>
-    </div>
+    </div></div>
     <div id="imgpanel" hidden>
       <p style="font-size:14px">이미지를 <b>길게 눌러</b> '사진에 저장' 또는 '이미지 저장'을 고르세요. 컴퓨터에서는 아래 버튼을 누르면 내려받습니다.</p>
       <img id="imgview" alt="영업 스타일 결과지 이미지">
@@ -324,7 +327,7 @@ function makeImage(){
   root.setAttribute("data-theme","light");
   var fonts=(document.fonts&&document.fonts.ready)?document.fonts.ready:Promise.resolve();
   return fonts.then(function(){
-    return html2canvas($("r-card"),{scale:2,backgroundColor:"#FFFFFF",useCORS:true,logging:false});
+    return html2canvas($("r-cap"),{scale:2,backgroundColor:"#FAF8FE",useCORS:true,logging:false,onclone:function(doc){var c=doc.getElementById("r-cap");if(c){c.style.padding="20px";c.style.background="#FAF8FE"}}});
   }).then(function(c){
     window.__imgData=c.toDataURL("image/png");
     return new Promise(function(res){c.toBlob(function(b){window.__imgBlob=b;res()},"image/png")});
